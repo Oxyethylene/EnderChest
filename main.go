@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 type fileInfo struct {
@@ -13,10 +15,27 @@ type fileInfo struct {
 	ModTime int64  `json:"mod_time"`
 }
 
+var DataPath string
+
+func init() {
+	log.Println("init started")
+	value, exist := os.LookupEnv("LB_DATA_PATH")
+	if !exist {
+		value = "./data"
+	}
+	path, err := filepath.Abs(value)
+	if err != nil {
+		log.Fatalln("can't located data path", err)
+	}
+	DataPath = path
+	log.Println("use data path:", DataPath)
+}
+
 func main() {
 	r := gin.Default()
 	r.GET("/files", func(c *gin.Context) {
-		files, _ := os.ReadDir("./data")
+		log.Printf("lookup files under %s", DataPath)
+		files, _ := os.ReadDir(DataPath)
 		data := make([]fileInfo, len(files))
 		for index, entry := range files {
 			if entry.IsDir() {
@@ -40,7 +59,8 @@ func main() {
 		object, _ := c.FormFile("object")
 		objectName := c.Query("objectName")
 		object.Filename = objectName
-		savePath := fmt.Sprintf("data/%s", object.Filename)
+		savePath := filepath.Join(DataPath, object.Filename)
+		log.Printf("will save obj to %s", savePath)
 		err := c.SaveUploadedFile(object, savePath)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -71,7 +91,8 @@ func main() {
 			})
 			return
 		}
-		objPath := fmt.Sprintf("data/%s", objId)
+		objPath := filepath.Join(DataPath, objId)
+		log.Printf("search file with path %s", objPath)
 		_, err := os.Stat(objPath)
 		if err != nil {
 			if os.IsNotExist(err) {
