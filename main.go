@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/Oxyethylene/littlebox/logging"
 	"github.com/gin-gonic/gin"
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,23 +19,43 @@ type fileInfo struct {
 var DataPath string
 
 func init() {
-	log.Println("init started")
-	value, exist := os.LookupEnv("LB_DATA_PATH")
+	logging.InitLogger()
+	const EnvDataPath = "LB_DATA_PATH"
+	const DefaultDataPath = "./data"
+	zap.S().Info("init started")
+	zap.S().Infow(" try load data path from env",
+		"env", EnvDataPath,
+	)
+	value, exist := os.LookupEnv(EnvDataPath)
 	if !exist {
-		value = "./data"
+		value = DefaultDataPath
+		zap.S().Infow("can't read data path from env, fallback to default",
+			"env", EnvDataPath,
+			"default", DefaultDataPath,
+		)
 	}
 	path, err := filepath.Abs(value)
 	if err != nil {
-		log.Fatalln("can't located data path", err)
+		zap.S().Fatal("can't located data path",
+			zap.Error(err),
+			"data_path", path,
+		)
 	}
 	DataPath = path
-	log.Println("use data path:", DataPath)
+	zap.S().Infow("data path inited",
+		"data_path", path,
+	)
 }
 
 func main() {
-	r := gin.Default()
+	defer zap.S().Sync()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(logging.GinLogger(), logging.GinRecovery(true))
 	r.GET("/files", func(c *gin.Context) {
-		log.Printf("lookup files under %s", DataPath)
+		zap.S().Infow("looking up files in data_path",
+			"data_path", DataPath,
+		)
 		files, _ := os.ReadDir(DataPath)
 		data := make([]fileInfo, len(files))
 		for index, entry := range files {
@@ -48,11 +69,15 @@ func main() {
 				ModTime: fileDetail.ModTime().Unix(),
 			}
 		}
-		c.JSON(http.StatusOK, gin.H{
+		response := gin.H{
 			"code":    200,
 			"message": "query success",
 			"data":    data,
-		})
+		}
+		zap.S().Infow("success response",
+			"response", response,
+		)
+		c.JSON(http.StatusOK, response)
 	})
 
 	r.POST("file", func(c *gin.Context) {
@@ -60,10 +85,12 @@ func main() {
 		objectName := c.Query("objectName")
 		object.Filename = objectName
 		savePath := filepath.Join(DataPath, object.Filename)
-		log.Printf("will save obj to %s", savePath)
+		zap.S().Infow("attempted saving obj",
+			"target_path", savePath,
+		)
 		err := c.SaveUploadedFile(object, savePath)
 		if err != nil {
-			fmt.Println(err.Error())
+			zap.S().Error(err)
 			c.JSON(http.StatusOK, gin.H{
 				"code":    400,
 				"message": fmt.Sprintf("err upload object: %v", err),
@@ -92,7 +119,7 @@ func main() {
 			return
 		}
 		objPath := filepath.Join(DataPath, objId)
-		log.Printf("search file with path %s", objPath)
+		zap.S().Info(fmt.Sprintf("searching file with path %s", objPath))
 		_, err := os.Stat(objPath)
 		if err != nil {
 			if os.IsNotExist(err) {
