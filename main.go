@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/Oxyethylene/littlebox/logging"
+	"github.com/Oxyethylene/littlebox/middleware"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
@@ -51,7 +52,11 @@ func main() {
 	defer zap.S().Sync()
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(logging.GinLogger(), logging.GinRecovery(true))
+	r.Use(
+		middleware.GinLogger(),
+		middleware.GinRecovery(true),
+		middleware.GinCors(),
+	)
 	r.GET("/files", func(c *gin.Context) {
 		zap.S().Infow("looking up files in data_path",
 			"data_path", DataPath,
