@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net"
@@ -114,4 +115,9 @@ func GinCors() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func Cors() gin.HandlerFunc {
+	config := cors.DefaultConfig()
+	return cors.New(config)
 }

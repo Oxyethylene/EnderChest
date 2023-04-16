@@ -12,7 +12,8 @@ func Create() *gin.Engine {
 	g.Use(
 		middleware.GinLogger(),
 		middleware.GinRecovery(true),
-		middleware.GinCors(),
+		//middleware.GinCors(),
+		middleware.Cors(),
 	)
 
 	objectHandler := api.NewObjectApi()
