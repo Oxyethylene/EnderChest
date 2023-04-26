@@ -75,9 +75,16 @@ func (a *ObjectApi) List(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (a *ObjectApi) Get(c *gin.Context) {
+func (a *ObjectApi) Add(c *gin.Context) {
 	object, _ := c.FormFile("object")
 	objectName := c.Query("objectName")
+	if objectName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    "400",
+			"message": "objectName is required and should not be empty.",
+		})
+		return
+	}
 	object.Filename = objectName
 	savePath := filepath.Join(a.dbPath, object.Filename)
 	zap.S().Infow("attempted saving obj",
@@ -105,7 +112,7 @@ func (a *ObjectApi) Get(c *gin.Context) {
 	})
 }
 
-func (a *ObjectApi) Add(c *gin.Context) {
+func (a *ObjectApi) Get(c *gin.Context) {
 	objId := c.Query("name")
 	if objId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
