@@ -2,7 +2,6 @@
 
 clean:
 	rm -rf target
-	mkdir -p target
 
 build:
 	mkdir -p target/data

@@ -15,11 +15,16 @@ func Create() *gin.Engine {
 		middleware.Cors(),
 	)
 
+	authorized := g.Group("/", gin.BasicAuth(gin.Accounts{
+		"admin":   "159632",
+		"kudlife": "kudlife",
+	}))
+
 	objectHandler := api.NewObjectApi()
 
 	g.GET("/files", objectHandler.List)
-	g.POST("file", objectHandler.Add)
-	g.GET("/file", objectHandler.Get)
+	authorized.POST("/file", objectHandler.Add)
+	authorized.GET("/file", objectHandler.Get)
 
 	return g
 }

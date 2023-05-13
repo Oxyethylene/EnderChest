@@ -41,6 +41,8 @@ func NewObjectApi() *ObjectApi {
 			"data_path", path,
 		)
 	}
+	zap.S().Infow("success open data path",
+		"data_path", path)
 	return &ObjectApi{
 		dbPath: path,
 	}
