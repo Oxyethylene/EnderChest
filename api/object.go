@@ -9,6 +9,19 @@ import (
 	"path/filepath"
 )
 
+const (
+	success = 200 + iota
+)
+
+const (
+	clientError = 400 + iota
+	invalidObjId
+)
+
+const (
+	serverError = 500 + iota
+)
+
 type ObjectInfo struct {
 	Id      string `json:"id"`
 	Name    string `json:"name"`
@@ -67,7 +80,7 @@ func (a *ObjectApi) List(c *gin.Context) {
 		}
 	}
 	response := gin.H{
-		"code":    200,
+		"code":    success,
 		"message": "query success",
 		"data":    data,
 	}
@@ -82,7 +95,7 @@ func (a *ObjectApi) Add(c *gin.Context) {
 	objectName := c.Query("objectName")
 	if objectName == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    "400",
+			"code":    clientError,
 			"message": "objectName is required and should not be empty.",
 		})
 		return
@@ -96,14 +109,14 @@ func (a *ObjectApi) Add(c *gin.Context) {
 	if err != nil {
 		zap.S().Error(err)
 		c.JSON(http.StatusOK, gin.H{
-			"code":    400,
+			"code":    clientError,
 			"message": fmt.Sprintf("err upload object: %v", err),
 		})
 		return
 	}
 	fileDetail, _ := os.Stat(savePath)
 	c.JSON(http.StatusOK, gin.H{
-		"code":    200,
+		"code":    success,
 		"message": fmt.Sprintf("'%s' uploaded!", object.Filename),
 		"data": ObjectInfo{
 			Id:      objectName,
@@ -118,7 +131,7 @@ func (a *ObjectApi) Get(c *gin.Context) {
 	objId := c.Query("name")
 	if objId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    "400",
+			"code":    clientError,
 			"message": "objId为空",
 		})
 		return
@@ -129,16 +142,42 @@ func (a *ObjectApi) Get(c *gin.Context) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code":    "401",
+				"code":    invalidObjId,
 				"message": fmt.Sprintf("can't find object with id %s", objId),
 			})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code":    "500",
+				"code":    serverError,
 				"message": fmt.Sprintf("server internal error: %v", err),
 			})
 		}
 		return
 	}
 	c.File(objPath)
+}
+
+func (a *ObjectApi) Remove(c *gin.Context) {
+	objId := c.Query("name")
+	if objId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    clientError,
+			"message": "objId为空",
+		})
+		return
+	}
+	objPath := filepath.Join(a.dbPath, objId)
+	err := os.Remove(objPath)
+	if err != nil {
+		zap.S().Errorw("remove object failed", "path", objPath)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    serverError,
+			"message": "can't remove objects",
+		})
+		return
+	}
+	zap.S().Infow("remove object success", "objId", objId, "dbPath", a.dbPath)
+	c.JSON(http.StatusBadRequest, gin.H{
+		"code":    success,
+		"message": "remove success",
+	})
 }

@@ -25,6 +25,7 @@ func Create() *gin.Engine {
 	g.GET("/files", objectHandler.List)
 	authorized.POST("/file", objectHandler.Add)
 	authorized.GET("/file", objectHandler.Get)
+	authorized.DELETE("/file", objectHandler.Remove)
 
 	return g
 }
