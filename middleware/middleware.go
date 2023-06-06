@@ -84,7 +84,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 func Cors() gin.HandlerFunc {
 	config := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
+		AllowHeaders:     []string{"*"},
 		AllowOrigins:     []string{"*"},
 		AllowCredentials: false,
 		MaxAge:           12 * time.Hour,
