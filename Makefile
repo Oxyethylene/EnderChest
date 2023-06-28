@@ -2,12 +2,12 @@
 
 clean:
 	rm -rf target
-	mkdir -p target
 
 build:
 	mkdir -p target/data
 	cp -R data target/
+	cp application.yaml target/
 	go build -o target/littlebox .
 
-run: build
+run:
 	target/littlebox
