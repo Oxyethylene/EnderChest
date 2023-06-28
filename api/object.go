@@ -1,7 +1,9 @@
 package api
 
 import (
+	"errors"
 	"fmt"
+	"github.com/Oxyethylene/littlebox/config"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
@@ -33,32 +35,37 @@ type ObjectApi struct {
 	dbPath string
 }
 
-func NewObjectApi() *ObjectApi {
-	const EnvDataPath = "LB_DATA_PATH"
-	const DefaultDataPath = "./data"
-	zap.S().Infow(" try load data path from env",
-		"env", EnvDataPath,
-	)
-	value, exist := os.LookupEnv(EnvDataPath)
-	if !exist {
-		value = DefaultDataPath
-		zap.S().Infow("can't read data path from env, fallback to default",
-			"env", EnvDataPath,
-			"default", DefaultDataPath,
-		)
-	}
-	path, err := filepath.Abs(value)
+func NewObjectApi() (*ObjectApi, error) {
+	fullPath, err := filepath.Abs(config.Store.DbPath)
+	exist, err := pathExists(fullPath)
 	if err != nil {
-		zap.S().Fatal("can't located data path",
+		zap.S().Fatal("error check data_path exists",
 			zap.Error(err),
-			"data_path", path,
+			"data_path", config.Store.DbPath,
 		)
+		return nil, err
 	}
-	zap.S().Infow("success open data path",
-		"data_path", path)
+	if !exist {
+		zap.S().Fatal("data_path not exists",
+			zap.Error(errors.New("data_path not exist")),
+			"data_path", fullPath,
+		)
+		return nil, err
+	} else {
+		if dir := isDir(fullPath); !dir {
+			zap.S().Fatal("error check data_path exists",
+				zap.Error(errors.New("data_path is file")),
+				"data_path", fullPath,
+			)
+			return nil, err
+		}
+	}
+	zap.S().Infow("success loaded data_path",
+		"data_path", fullPath,
+	)
 	return &ObjectApi{
-		dbPath: path,
-	}
+		dbPath: fullPath,
+	}, nil
 }
 
 func (a *ObjectApi) List(c *gin.Context) {
@@ -180,4 +187,29 @@ func (a *ObjectApi) Remove(c *gin.Context) {
 		"code":    success,
 		"message": "remove success",
 	})
+}
+
+func pathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	//IsNotExist来判断，是不是不存在的错误
+	if os.IsNotExist(err) { //如果返回的错误类型使用os.isNotExist()判断为true，说明文件或者文件夹不存在
+		return false, nil
+	}
+	return false, err //如果有错误了，但是不是不存在的错误，所以把这个错误原封不动的返回
+}
+
+func isDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+
+		return false
+	}
+	return s.IsDir()
+}
+
+func isFile(path string) bool {
+	return !isDir(path)
 }

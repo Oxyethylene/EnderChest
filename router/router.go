@@ -4,6 +4,7 @@ import (
 	"github.com/Oxyethylene/littlebox/api"
 	"github.com/Oxyethylene/littlebox/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func Create() *gin.Engine {
@@ -20,7 +21,12 @@ func Create() *gin.Engine {
 		"kudlife": "kudlife",
 	}))
 
-	objectHandler := api.NewObjectApi()
+	objectHandler, err := api.NewObjectApi()
+	if err != nil {
+		zap.S().Fatalw("error init objectHandler",
+			zap.Error(err),
+		)
+	}
 
 	g.GET("/files", objectHandler.List)
 	authorized.POST("/file", objectHandler.Add)
