@@ -45,7 +45,8 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") ||
+							strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
 							brokenPipe = true
 						}
 					}
@@ -81,6 +82,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 	}
 }
 
+// Cors 处理cors
 func Cors() gin.HandlerFunc {
 	config := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
@@ -90,4 +92,10 @@ func Cors() gin.HandlerFunc {
 		MaxAge:           12 * time.Hour,
 	}
 	return cors.New(config)
+}
+
+// Jwt 用JWT鉴权并给接口提供用户信息
+func Jwt() gin.HandlerFunc {
+	config := JwtConfig{}
+	return NewJwt(config)
 }

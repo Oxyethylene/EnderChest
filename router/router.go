@@ -9,17 +9,25 @@ import (
 func Create() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	g := gin.New()
+
 	g.Use(
 		middleware.GinLogger(),
 		middleware.GinRecovery(true),
 		middleware.Cors(),
 	)
 
-	objectHandler := api.NewObjectApi()
+	userHandler := api.NewLoginApi()
+	g.POST("/login", userHandler.Login)
 
-	g.GET("/files", objectHandler.List)
-	g.POST("file", objectHandler.Add)
-	g.GET("/file", objectHandler.Get)
+	objectHandler := api.NewObjectApi()
+	apiGroup := g.Group("/api")
+	apiGroup.Use(middleware.Jwt())
+	{
+		apiGroup.GET("/file", objectHandler.List)
+		apiGroup.POST("file", objectHandler.Add)
+		apiGroup.GET("/file/:id", objectHandler.Get)
+
+	}
 
 	return g
 }
