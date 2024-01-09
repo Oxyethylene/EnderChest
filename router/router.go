@@ -4,34 +4,30 @@ import (
 	"github.com/Oxyethylene/littlebox/api"
 	"github.com/Oxyethylene/littlebox/middleware"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func Create() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	g := gin.New()
+
 	g.Use(
 		middleware.GinLogger(),
 		middleware.GinRecovery(true),
 		middleware.Cors(),
 	)
 
-	authorized := g.Group("/", gin.BasicAuth(gin.Accounts{
-		"admin":   "159632",
-		"kudlife": "kudlife",
-	}))
+	userHandler := api.NewLoginApi()
+	g.POST("/login", userHandler.Login)
 
-	objectHandler, err := api.NewObjectApi()
-	if err != nil {
-		zap.S().Fatalw("error init objectHandler",
-			zap.Error(err),
-		)
+	objectHandler := api.NewObjectApi()
+	apiGroup := g.Group("/api")
+	apiGroup.Use(middleware.Jwt())
+	{
+		apiGroup.GET("/file", objectHandler.List)
+		apiGroup.POST("file", objectHandler.Add)
+		apiGroup.GET("/file/:id", objectHandler.Get)
+
 	}
-
-	g.GET("/files", objectHandler.List)
-	authorized.POST("/file", objectHandler.Add)
-	authorized.GET("/file", objectHandler.Get)
-	authorized.DELETE("/file", objectHandler.Remove)
 
 	return g
 }
