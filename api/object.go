@@ -35,7 +35,7 @@ type ObjectApi struct {
 	dbPath string
 }
 
-func NewObjectApi() (*ObjectApi, error) {
+func NewObjectApi() *ObjectApi {
 	fullPath, err := filepath.Abs(config.Store.DbPath)
 	exist, err := pathExists(fullPath)
 	if err != nil {
@@ -43,21 +43,18 @@ func NewObjectApi() (*ObjectApi, error) {
 			zap.Error(err),
 			"data_path", config.Store.DbPath,
 		)
-		return nil, err
 	}
 	if !exist {
 		zap.S().Fatal("data_path not exists",
 			zap.Error(errors.New("data_path not exist")),
 			"data_path", fullPath,
 		)
-		return nil, err
 	} else {
 		if dir := isDir(fullPath); !dir {
 			zap.S().Fatal("error check data_path exists",
 				zap.Error(errors.New("data_path is file")),
 				"data_path", fullPath,
 			)
-			return nil, err
 		}
 	}
 	zap.S().Infow("success loaded data_path",
@@ -65,7 +62,7 @@ func NewObjectApi() (*ObjectApi, error) {
 	)
 	return &ObjectApi{
 		dbPath: fullPath,
-	}, nil
+	}
 }
 
 func (a *ObjectApi) List(c *gin.Context) {
