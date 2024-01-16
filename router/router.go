@@ -26,7 +26,7 @@ func Create() *gin.Engine {
 		apiGroup.GET("/file", objectHandler.List)
 		apiGroup.POST("file", objectHandler.Add)
 		apiGroup.GET("/file/:id", objectHandler.Get)
-
+		apiGroup.DELETE("/file/:id", objectHandler.Remove)
 	}
 
 	return g
