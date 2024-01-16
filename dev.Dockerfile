@@ -2,14 +2,15 @@ FROM golang:1.19-alpine as builder
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && \
     apk --no-cache add git
-ADD * /app
+COPY . /app
 WORKDIR /app
-RUN GOOS=linux go build .
+RUN mkdir -p target && \
+    GO111MODULE=on GOOS=linux GOPROXY=https://goproxy.cn,direct go build -o target/littlebox main.go
 
 
 FROM alpine:3.19 as prod
 
 WORKDIR /app
-COPY --from=0 /app/littlebox .
+COPY --from=0 /app/target/littlebox .
 
 ENTRYPOINT ["/app/littlebox"]
