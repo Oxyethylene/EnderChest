@@ -1,0 +1,17 @@
+[application]
+address = "127.0.0.1"
+port = 8080
+
+[store]
+path = "/etc/littlebox"
+
+[datasource]
+driver = "mysql"
+net = "tcp"
+address = "120.24.82.106:3456"
+user = "littlebox"
+password = "cTbdJbij.a#Zwow)?207"
+database = "littlebox"
+
+[jwt]
+secret = "+fHCDHCRBbd=B9,~-_s=VyF:%?P:}E5HGWtwBX4@J#cDgxaMBeifQ@_6?spP5@*R"

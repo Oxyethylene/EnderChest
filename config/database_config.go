@@ -1,21 +1,22 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+)
 
-var Database DatabaseConfig
+var DatabaseConfig = new(databaseConfig)
 
 func init() {
-	Database = DatabaseConfig{
-		Driver:   viper.GetString("datasource.driver"),
-		Net:      viper.GetString("datasource.net"),
-		Addr:     viper.GetString("datasource.address"),
-		User:     viper.GetString("datasource.user"),
-		Password: viper.GetString("datasource.password"),
-		Database: viper.GetString("datasource.database"),
+	var f configInitializer = func() {
+		if err := viper.UnmarshalKey("datasource", DatabaseConfig); err != nil {
+			zap.S().Fatalw("init datasource config failed", zap.Error(err))
+		}
 	}
+	initConfigs.PushBack(f)
 }
 
-type DatabaseConfig struct {
+type databaseConfig struct {
 	Driver   string
 	Net      string
 	Addr     string

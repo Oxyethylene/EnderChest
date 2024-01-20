@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"github.com/Oxyethylene/littlebox/config"
 	"go.uber.org/zap"
 	"net"
 	"net/http"
@@ -11,16 +12,16 @@ import (
 
 func Run(router http.Handler) {
 	httpHandler := router
-	const ADDRESS = "0.0.0.0"
-	const PORT = 8080
-	addr := fmt.Sprintf("%s:%d", ADDRESS, PORT)
-	zap.S().Infow("Started Listening for plain HTTP connection",
-		"addr", ADDRESS,
-		"port", PORT,
-	)
+	address := config.ServerConfig.Addr
+	port := config.ServerConfig.Port
+	addr := fmt.Sprintf("%s:%d", address, port)
 	server := &http.Server{Addr: addr, Handler: httpHandler}
+	listener := startListening(addr, 10)
+	zap.S().Infow("Started Listening for plain HTTP connection",
+		"addr", listener.Addr().String(),
+	)
 
-	zap.S().Fatal(server.Serve(startListening(addr, 10)))
+	zap.S().Fatal(server.Serve(listener))
 }
 
 func startListening(addr string, keepAlive int) net.Listener {

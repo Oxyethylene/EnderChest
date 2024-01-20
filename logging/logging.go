@@ -19,12 +19,14 @@ func InitLogger() {
 		zap.WithClock(zapcore.DefaultClock))
 	zap.ReplaceGlobals(logger)
 }
+
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
+
 func getLogWriter() zapcore.WriteSyncer {
 	return zapcore.AddSync(os.Stdout)
 }
