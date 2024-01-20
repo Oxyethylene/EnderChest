@@ -2,14 +2,17 @@ package config
 
 import "github.com/spf13/viper"
 
-var Store StoreConfig
+var Store storeConfig
 
 func init() {
-	Store = StoreConfig{
-		DbPath: viper.GetString("store.path"),
+	var f configInitializer = func() {
+		Store = storeConfig{
+			DbPath: viper.GetString("store.path"),
+		}
 	}
+	initConfigs.PushBack(f)
 }
 
-type StoreConfig struct {
+type storeConfig struct {
 	DbPath string
 }

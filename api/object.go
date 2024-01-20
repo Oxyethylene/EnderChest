@@ -39,19 +39,19 @@ func NewObjectApi() *ObjectApi {
 	fullPath, err := filepath.Abs(config.Store.DbPath)
 	exist, err := pathExists(fullPath)
 	if err != nil {
-		zap.S().Fatal("error check data_path exists",
+		zap.S().Fatalw("error check data_path exists",
 			zap.Error(err),
 			"data_path", config.Store.DbPath,
 		)
 	}
 	if !exist {
-		zap.S().Fatal("data_path not exists",
+		zap.S().Fatalw("data_path not exists",
 			zap.Error(errors.New("data_path not exist")),
 			"data_path", fullPath,
 		)
 	} else {
 		if dir := isDir(fullPath); !dir {
-			zap.S().Fatal("error check data_path exists",
+			zap.S().Fatalw("error check data_path exists",
 				zap.Error(errors.New("data_path is file")),
 				"data_path", fullPath,
 			)
@@ -94,9 +94,9 @@ func (a *ObjectApi) List(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (a *ObjectApi) Add(c *gin.Context) {
+func (a *ObjectApi) Put(c *gin.Context) {
 	object, _ := c.FormFile("object")
-	objectName := c.Query("objectName")
+	objectName := c.PostForm("name")
 	if objectName == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    clientError,

@@ -23,9 +23,9 @@ func Create() *gin.Engine {
 	apiGroup := g.Group("/api")
 	apiGroup.Use(middleware.Jwt())
 	{
-		apiGroup.GET("/file", objectHandler.List)
-		apiGroup.POST("file", objectHandler.Add)
-		apiGroup.GET("/file/:id", objectHandler.Get)
+		apiGroup.GET("/object", objectHandler.List)
+		apiGroup.PUT("/object", objectHandler.Put)
+		apiGroup.GET("/object/:id", objectHandler.Get)
 		apiGroup.DELETE("/file/:id", objectHandler.Remove)
 	}
 

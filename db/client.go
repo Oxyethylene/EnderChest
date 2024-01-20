@@ -9,18 +9,18 @@ import (
 
 var db *sql.DB
 
-func init() {
+func InitDbClient() {
 	config := mysql.NewConfig()
-	config.Net = dbConfig.Database.Net
-	config.Addr = dbConfig.Database.Addr
-	config.User = dbConfig.Database.User
-	config.Passwd = dbConfig.Database.Password
-	config.DBName = dbConfig.Database.Database
+	config.Net = dbConfig.DatabaseConfig.Net
+	config.Addr = dbConfig.DatabaseConfig.Addr
+	config.User = dbConfig.DatabaseConfig.User
+	config.Passwd = dbConfig.DatabaseConfig.Password
+	config.DBName = dbConfig.DatabaseConfig.Database
 	dsn := config.FormatDSN()
-	zap.S().Info("attempt connect to database %s", dsn)
-	_db, err := sql.Open(dbConfig.Database.Driver, dsn)
+	zap.S().Infow("attempt connect to database", "dsn", dsn)
+	_db, err := sql.Open(dbConfig.DatabaseConfig.Driver, dsn)
 	if err != nil {
-		zap.S().Fatal("db init error", "err", err)
+		zap.S().Fatalw("db init error", zap.Error(err))
 	}
 	db = _db
 	zap.S().Info("connect to database succeed")

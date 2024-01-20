@@ -1,12 +1,13 @@
 package util
 
 import (
+	"github.com/Oxyethylene/littlebox/config"
 	"github.com/Oxyethylene/littlebox/db"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 
-var jwtSecret = []byte("+fHCDHCRBbd=B9,~-_s=VyF:%?P:}E5HGWtwBX4@J#cDgxaMBeifQ@_6?spP5@*R")
+var jwtSecret = []byte(config.JwtConfig.Secret)
 
 type Claims struct {
 	Id       int    `json:"id"`
