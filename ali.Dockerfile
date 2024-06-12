@@ -10,6 +10,6 @@ RUN mkdir -p target && \
 FROM alpine:3.19 as prod
 
 WORKDIR /app
-COPY --from=0 /app/target/littlebox .
+COPY --from=0 /app/target/ender_chest .
 
-ENTRYPOINT ["/app/littlebox"]
+ENTRYPOINT ["/app/ender_chest"]
