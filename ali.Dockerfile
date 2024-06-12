@@ -4,7 +4,7 @@ RUN apk --no-cache add git
 COPY . /app
 WORKDIR /app
 RUN mkdir -p target && \
-    GOOS=linux go build -o target/littlebox main.go
+    GOOS=linux go build -o target/ender_chest main.go
 
 
 FROM alpine:3.19 as prod

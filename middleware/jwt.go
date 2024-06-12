@@ -9,13 +9,15 @@ import (
 	"time"
 )
 
+// JwtConfig defines the config for Jwt middleware
 type JwtConfig struct {
 	TokenLookUp string
-	// TokenHeadName is a string in the header. Default value is "Bearer "
+	// TokenHeadName is a string prefix in the header. Default value is "Bearer "
 	TokenHeaderName string
 }
 
-func NewJwt(config JwtConfig) gin.HandlerFunc {
+// newJwt is a middleware that checks for a JWT on the `Authorization` header
+func newJwt(config JwtConfig) gin.HandlerFunc {
 	if config.TokenHeaderName == "" {
 		config.TokenHeaderName = "Bearer "
 	}

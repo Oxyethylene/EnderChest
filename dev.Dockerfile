@@ -5,7 +5,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/re
 COPY . /app
 WORKDIR /app
 RUN mkdir -p target && \
-    GO111MODULE=on GOOS=linux GOPROXY=https://goproxy.cn,direct go build -o target/littlebox main.go
+    GO111MODULE=on GOOS=linux GOPROXY=https://goproxy.cn,direct go build -o target/ender_chest main.go
 
 
 FROM alpine:3.19 as prod

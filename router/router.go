@@ -12,7 +12,7 @@ func Create() *gin.Engine {
 
 	g.Use(
 		middleware.GinLogger(),
-		middleware.GinRecovery(true),
+		middleware.GinRecovery(),
 		middleware.Cors(),
 	)
 
