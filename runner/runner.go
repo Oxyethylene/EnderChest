@@ -3,7 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
-	"github.com/Oxyethylene/littlebox/config"
+	"github.com/Oxyethylene/EnderChest/config"
 	"go.uber.org/zap"
 	"net"
 	"net/http"

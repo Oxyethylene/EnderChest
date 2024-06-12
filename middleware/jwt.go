@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/Oxyethylene/littlebox/util"
+	"github.com/Oxyethylene/EnderChest/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"

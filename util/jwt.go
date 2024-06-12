@@ -1,8 +1,8 @@
 package util
 
 import (
-	"github.com/Oxyethylene/littlebox/config"
-	"github.com/Oxyethylene/littlebox/db"
+	"github.com/Oxyethylene/EnderChest/config"
+	"github.com/Oxyethylene/EnderChest/db"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )

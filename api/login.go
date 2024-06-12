@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/Oxyethylene/littlebox/db"
-	"github.com/Oxyethylene/littlebox/util"
+	"github.com/Oxyethylene/EnderChest/db"
+	"github.com/Oxyethylene/EnderChest/util"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"

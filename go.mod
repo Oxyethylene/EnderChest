@@ -1,4 +1,4 @@
-module github.com/Oxyethylene/littlebox
+module github.com/Oxyethylene/EnderChest
 
 go 1.19
 

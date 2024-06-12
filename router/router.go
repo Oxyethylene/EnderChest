@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/Oxyethylene/littlebox/api"
-	"github.com/Oxyethylene/littlebox/middleware"
+	"github.com/Oxyethylene/EnderChest/api"
+	"github.com/Oxyethylene/EnderChest/middleware"
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,7 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/Oxyethylene/littlebox/config"
+	"github.com/Oxyethylene/EnderChest/config"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"

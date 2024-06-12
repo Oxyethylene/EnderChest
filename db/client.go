@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	dbConfig "github.com/Oxyethylene/littlebox/config"
+	dbConfig "github.com/Oxyethylene/EnderChest/config"
 	"github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 )

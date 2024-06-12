@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/Oxyethylene/littlebox/config"
-	"github.com/Oxyethylene/littlebox/db"
-	"github.com/Oxyethylene/littlebox/logging"
-	"github.com/Oxyethylene/littlebox/router"
-	"github.com/Oxyethylene/littlebox/runner"
+	"github.com/Oxyethylene/EnderChest/config"
+	"github.com/Oxyethylene/EnderChest/db"
+	"github.com/Oxyethylene/EnderChest/logging"
+	"github.com/Oxyethylene/EnderChest/router"
+	"github.com/Oxyethylene/EnderChest/runner"
 	"go.uber.org/zap"
 )
 
